@@ -18,6 +18,8 @@ class CreateTableProductColorPriceTable extends Migration
             $table->integer('product_id');
             $table->string('color');
             $table->integer('price');
+            $table->integer('dungluong_id')->nullable();
+            $table->integer('qty');
         });
     }
 

@@ -17,6 +17,7 @@ class CreateTableProductDungluongTable extends Migration
             $table->increments('id');
             $table->integer('product_id');
             $table->string('dungluong');
+            $table->integer('slug_dungluong');
         });
     }
 

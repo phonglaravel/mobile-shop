@@ -16,6 +16,7 @@ class CreateTableProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
+            $table->integer('price')->nullable();
             $table->string('slug_product');
             $table->integer('category_id');
             $table->string('tinhtrang');
@@ -25,6 +26,7 @@ class CreateTableProductsTable extends Migration
             $table->text('description');
             $table->text('kithuat');
             $table->integer('status');
+            $table->string('image')->nullable();
             $table->string('banner')->nullable();
             
         });
