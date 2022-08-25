@@ -255,7 +255,6 @@ class IndexController extends Controller
             foreach($request->cate as $item){
                 $cate = Cate::where('slug_cate',$item)->first();
                 $product_cate = ProductCate::where('cate_id',$cate->id)->get();
-               //aaaaaaaaaaaaaaaa
                 foreach($product_cate as $i){
                     $b[] = $i->product_id; 
                 }
