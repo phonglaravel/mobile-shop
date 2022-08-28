@@ -116,14 +116,13 @@ class IndexController extends Controller
         $pro_color = ProductColorPrice::where('id',$request->pro_color)->first();
        if($request->qty > $pro_color->qty){
         return back()->with('error_qty','Vượt quá số lượng tồn kho');
-       }
-       else{
+       }else{
         $product = Product::find($id);
         if($product->amount_sale > 0&& $product->day_start<=$to_day && $product->day_end>=$to_day){
             if($request->qty>1){
                 return back()->with('error_qty','Chỉ được mua 1 sản phẩm giảm giá');
             }
-            }else{
+            else{
                 $product->amount_sale = $product->amount_sale - $request->qty;
                 $product->save();
                 $data['id'] = $product->id;
@@ -142,8 +141,7 @@ class IndexController extends Controller
                 return back();
             }
             
-        }
-        else{
+        }else{
             $data['id'] = $product->id;
                 $data['qty'] = $request->qty;
                 $data['name'] = $product->title;
