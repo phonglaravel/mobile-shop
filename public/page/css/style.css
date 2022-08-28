@@ -6104,7 +6104,11 @@ button.bg-primary:focus {
 }
 
 .bg-secondary {
-  background-color: #F5F5F5 !important;
+  background-color: #34ce57 !important;
+  color: wheat;
+  font-size: 25px;
+  padding-left: 10px;
+  clip-path: polygon(95% 0%,100% 50%,95% 100%,0% 100%,10px 50%,0% 0%);
 }
 
 a.bg-secondary:hover, a.bg-secondary:focus,
@@ -9700,6 +9704,12 @@ a.text-dark:hover, a.text-dark:focus {
   bottom: 30px;
   z-index: 11;
   animation: action 1s infinite alternate;
+}
+.hover a{
+  color: black;
+}
+.hover a:hover{
+  color: #d39e00;
 }
 
 @keyframes action {

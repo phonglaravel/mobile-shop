@@ -17,7 +17,26 @@
             @enderror
           </div>
         </div>
-        
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">Sale</label>
+          <div class="col-sm-10">
+            <input  name="sale" type="text" class="form-control" placeholder="Tên">
+            
+          </div>
+          <label class="col-sm-2 col-form-label">Số lượng</label>
+          <div class="col-sm-10">
+            <input  name="amount_sale" type="text" class="form-control" placeholder="Tên">
+            
+          </div>
+          <label class="col-sm-2 col-form-label">Bắt đầu</label>
+          <div class="col-sm-10">
+            <input id="datepicker1" name="day_start" type="text" class="form-control" placeholder="Tên">
+          </div>
+          <label class="col-sm-2 col-form-label">Kết thúc</label>
+          <div class="col-sm-10">
+            <input id="datepicker2" name="day_end" type="text" class="form-control" placeholder="Tên">
+          </div>
+        </div>
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">Danh mục</label>
           <div class="col-sm-10">

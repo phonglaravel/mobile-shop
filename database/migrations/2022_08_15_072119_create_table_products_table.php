@@ -28,6 +28,12 @@ class CreateTableProductsTable extends Migration
             $table->integer('status');
             $table->string('image')->nullable();
             $table->string('banner')->nullable();
+            $table->integer('order_count');
+            $table->integer('sale')->nullable();
+            $table->integer('amount_sale')->nullable();
+            
+            $table->string('day_start')->nullable();
+            $table->string('day_end')->nullable();
             
         });
     }

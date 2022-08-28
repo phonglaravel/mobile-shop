@@ -51,8 +51,7 @@ class ProductController extends Controller
     {
        
         $product = new Product();
-        $product->title = $request->title;
-        
+        $product->title = $request->title;       
         $product->slug_product = Str::slug($request->title);
         $product->category_id	 = $request->category_id;
         $product->tinhtrang	 = $request->tinhtrang;
@@ -62,6 +61,11 @@ class ProductController extends Controller
         $product->description	 = $request->description;
         $product->kithuat	 = $request->kithuat;
         $product->status	 = $request->status;
+        $product->sale	 = $request->sale;
+        $product->amount_sale	 = $request->amount_sale;
+        $product->day_start	 = $request->day_start;
+        $product->day_end	 = $request->day_end;
+        $product->order_count = 0;
         if ($request->hasFile('banner')) {
             $file = $request->file('banner');
             $extension = $file->getClientOriginalExtension();
@@ -72,8 +76,7 @@ class ProductController extends Controller
                 while (file_exists("image/products/banner/". $image))
                   $image = Str::slug($request->title).'_'.Str::random(5).'.'.$extension;
                   $file->move('image/products/banner/', $image);
-                  $product->banner = $image;
-                  
+                  $product->banner = $image;                 
                 }
            }
         $product->save();
@@ -98,8 +101,7 @@ class ProductController extends Controller
                         $b->save();
                         $product->price = $request->input('item.0.price0');
                         $product->save();
-                 }   
-                                          
+                 }                                            
             }
         }else{
             foreach($request->input('item') as $key=> $item){
@@ -112,9 +114,7 @@ class ProductController extends Controller
                        $b->save();
                        $product->price = $request->input('item.0.price0');
                        $product->save();
-                }   
-                                         
-           
+                }            
         }
         
         if ($request->hasFile('images')) {
@@ -138,8 +138,7 @@ class ProductController extends Controller
                     $product->save();
                   }
                 }
-            }
-            
+            }           
            }
            
            if(isset($request->ram)){
@@ -215,6 +214,10 @@ class ProductController extends Controller
         $product->description	 = $request->description;
         $product->kithuat	 = $request->kithuat;
         $product->status	 = $request->status;
+        $product->sale	 = $request->sale;
+        $product->amount_sale	 = $request->amount_sale;
+        $product->day_start	 = $request->day_start;
+        $product->day_end	 = $request->day_end;
         $product->price = $request->gia[0];
         if ($request->hasFile('banner')) {
             $image_path = 'image/products/banner'.$product->banner;
@@ -329,7 +332,7 @@ class ProductController extends Controller
         $data = $request->all();
         
         $danhmuccha = Category::where('id',$data['danhmuccha'])->first();
-        if($danhmuccha->id==6){
+        if($danhmuccha->slug_category=='laptop'){
             $output = '';
             foreach($danhmuccha->cate as $item){
                 $output.='

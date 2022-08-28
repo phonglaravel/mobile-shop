@@ -63,7 +63,16 @@
                         class="tab-pane fade show active"
                         @else 
                         class="tab-pane fade"
-                        @endif id="la{{$item->id}}" role="tabpanel" aria-labelledby="la{{$item->id}}-tab"><h3>{{number_format($item->price,0,',','.')}}đ</h3></div>
+                        @endif id="la{{$item->id}}" role="tabpanel" aria-labelledby="la{{$item->id}}-tab">
+                        @if ($product->sale==0||$product->sale==null||$product->day_start>$to_day||$product->day_end<$to_day||$product->amount_sale==0)
+                        <h3>{{number_format($item->price,0,',','.')}}đ</h3>
+                        <input type="hidden" id="price-{{$key}}" value="{{$item->price}}">
+                        @else 
+                        <h5>{{number_format($item->price*(100-$product->sale)/100,0,',','.')}} đ</h5><h6 class="text-muted ml-2"><del>{{number_format($item->price,0,',','.')}} đ</del></h6>
+                        <input type="hidden" id="price-{{$key}}" value="{{$item->price*(100-$product->sale)/100}}">
+                        @endif
+                       
+                        </div>
                         
                         @endforeach
                         
@@ -239,7 +248,15 @@
                             </div>
                         </div>
                         <div class="text-center py-4">
-                            <a class="h6 text-decoration-none text-truncate" href="">{{$item->title}}</a>
+                            @if ($item->product_dungluong->count()==0)
+                            <a class="h6 text-decoration-none text-truncate" href="{{route('page.product1',[$item->category->slug_category,$item->slug_product])}}">{{$item->title}}</a> 
+                            @else 
+                            @foreach ($item->product_dungluong as $key=> $i)
+                            @if ($key==0)
+                            <a class="h6 text-decoration-none text-truncate" href="{{route('page.product',[$item->category->slug_category,$item->slug_product,$i->slug_dungluong])}}">{{$item->title}}</a>
+                            @endif
+                            @endforeach
+                            @endif
                             <div class="d-flex align-items-center justify-content-center mt-2">
                                 <h5>{{number_format($item->price,0,',','.')}} đ</h5>
                             </div>
@@ -266,7 +283,7 @@
 @push('scripts')
     <script>
         $(document).ready(function(){
-            let price = $('#id0').data('price');
+            let price = $('#price-0').val();
             let id = $('#id0').data('id');
             
             $('#price_qty').html(`<input type="hidden" name="price" value="`+price+`">
@@ -275,7 +292,7 @@
         let sl = $("input[name='sl']").val();
         for(let i=0;i<sl;i++){
             $('#id'+i+'').click(function(){
-                let price = $('#id'+i+'').data('price');
+                let price = $('#price-'+i).data('price');
                 let id = $('#id'+i+'').data('id');
             
                 $('#price_qty').html(`<input type="hidden" name="price" value="`+price+`">

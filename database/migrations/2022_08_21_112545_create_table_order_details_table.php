@@ -20,6 +20,8 @@ class CreateTableOrderDetailsTable extends Migration
             $table->integer('product_id');
             $table->integer('price');
             $table->integer('qty');
+            $table->string('dungluong')->nullable();
+            $table->string('color')->nullable();
         });
     }
 

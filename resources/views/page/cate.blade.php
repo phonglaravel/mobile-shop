@@ -111,11 +111,15 @@
                             @endforeach
                             @endif
                             <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>{{number_format($item->price,0,',','.')}}</h5><h6 class="text-muted ml-2"><del>{{number_format($item->price,0,',','.')}}</del></h6>
+                                @if ($item->sale==0||$item->sale==null||$item->day_start>$to_day||$item->day_end<$to_day||$item->amount_sale==0)
+                            <h5>{{number_format($item->price,0,',','.')}} đ</h5>
+                            @else 
+                            <h5>{{number_format($item->price*(100-$item->sale)/100,0,',','.')}} đ</h5><h6 class="text-muted ml-2"><del>{{number_format($item->price,0,',','.')}} đ</del></h6>
+                            @endif
                             </div>
                             <div class="d-flex align-items-center justify-content-center mb-1">
                                 
-                                <small>Đã mua: {{$item->order_product()}}</small>
+                                <small>Đã mua: {{$item->order_count}}</small>
                             </div>
                         </div>
                     </div>

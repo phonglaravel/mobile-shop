@@ -73,6 +73,8 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Tên sản phẩm</th>
+      <th scope="col">Dung lượng</th>
+      <th scope="col">Màu</th>
       <th scope="col">Giá</th>
       <th scope="col">Số lượng</th>
       <th scope="col">Tổng</th>
@@ -83,6 +85,8 @@
     <tr>
       <th scope="col">{{$key+1}}</th>
       <th scope="col">{{$item->product_name}}</th>
+      <th scope="col">{{$item->dungluong}}</th>
+      <th scope="col">{{$item->color}}</th>
       <th scope="col">{{number_format($item->price,0,',','.')}} đ</th>
       <th scope="col">{{$item->qty}}</th>
       <th scope="col">{{number_format($item->price*$item->qty,0,',','.')}} đ</th>

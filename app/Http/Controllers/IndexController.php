@@ -25,20 +25,50 @@ class IndexController extends Controller
 {
     public function index()
     {
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
+       
+        $sale = Product::where('day_start','<=',$to_day)->where('day_end','>=',$to_day)->where('amount_sale','>',0)->get();
+       
         $categories = Category::orderBy('id','ASC')->get();
         $banner = Product::orderBy('id','DESC')->whereNotNull('banner')->take(3)->get();
-        return view('page.index',compact('categories','banner'));
+       
+        $category_skip_0 = Category::skip(0)->first();
+        $product_skip_0 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_0->id)->take(8)->get();
+        
+        $category_skip_1 = Category::skip(1)->first();
+        $product_skip_1 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_1->id)->take(8)->get();
+        
+        $category_skip_2 = Category::skip(2)->first();
+        $product_skip_2 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_2->id)->take(8)->get();
+        
+        $category_skip_3 = Category::skip(3)->first();
+        $product_skip_3 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_3->id)->take(8)->get();
+        
+        $category_skip_4 = Category::skip(4)->first();
+        $product_skip_4 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_4->id)->take(8)->get();
+        
+        $category_skip_5 = Category::skip(5)->first();
+        $product_skip_5 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_5->id)->take(8)->get();
+        
+        
+        return view('page.index',
+        compact('categories','banner','category_skip_0',
+        'product_skip_0','category_skip_1','product_skip_1','category_skip_2','product_skip_2',
+        'category_skip_3','product_skip_3'
+        ,'category_skip_4','product_skip_4','category_skip_5','product_skip_5','sale','to_day'));
     }
     public function category($slug)
     {
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
         $categories = Category::orderBy('id','ASC')->get();
         $category = Category::where('slug_category',$slug)->first();
         $products = Product::orderBy('id','DESC')->where('category_id',$category->id)->get();
         $check = [];
-        return view('page.category', compact('category','categories','products','check'));
+        return view('page.category', compact('category','categories','products','check','to_day'));
     }
     public function cate($slug_category,$slug_cate)
     {
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
         $categories = Category::orderBy('id','ASC')->get();
         $category = Category::where('slug_category',$slug_category)->first();
         $cate = Cate::where('slug_cate',$slug_cate)->first();
@@ -50,62 +80,117 @@ class IndexController extends Controller
         $products = Product::orderBy('id','DESC')->whereIn('id', $productsrr)->get();
         $check = [];
         $check[] = $cate->slug_cate;
-        return view('page.cate', compact('category','categories','products','cate','check'));
+        return view('page.cate', compact('category','categories','products','cate','check','to_day'));
     }
     public function product($slug_category,$slug_product,$slug_dungluong)
     {
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
         $categories = Category::orderBy('id','ASC')->get();
         $category = Category::where('slug_category',$slug_category)->first();
        $product = Product::where('slug_product',$slug_product)->first();
        $product_dungluong = ProductDungluong::where('product_id',$product->id)->where('slug_dungluong',$slug_dungluong)->first();
        $product_color_price = ProductColorPrice::where('dungluong_id',$product_dungluong->id)->get();
        $lienquan = Product::orderBy('id','DESC')->where('category_id',$category->id)->take(5)->get();
-       return view('page.product', compact('lienquan','categories','product','category','product_dungluong','product_color_price'));
+       return view('page.product', compact('to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
     }
     public function product1($slug_category,$slug_product)
     {
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
         $categories = Category::orderBy('id','ASC')->get();
         $category = Category::where('slug_category',$slug_category)->first();
        $product = Product::where('slug_product',$slug_product)->first();
        
        $product_color_price = ProductColorPrice::where('product_id',$product->id)->get();
        $lienquan = Product::orderBy('id','DESC')->where('category_id',$category->id)->take(5)->get();
-       return view('page.product', compact('lienquan','categories','product','category','product_color_price'));
+       return view('page.product', compact('lienquan','categories','product','category','product_color_price','to_day'));
     }
     public function cart()
     {
+        // dd(Session::get('sale'));
         $categories = Category::orderBy('id','ASC')->get();
         return view('page.cart', compact('categories'));
     }
     public function save_cart(Request $request,$id)
     {
-       
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
         $pro_color = ProductColorPrice::where('id',$request->pro_color)->first();
        if($request->qty > $pro_color->qty){
         return back()->with('error_qty','Vượt quá số lượng tồn kho');
        }
        else{
         $product = Product::find($id);
-        $data['id'] = $product->id;
-        $data['qty'] = $request->qty;
-        $data['name'] = $product->title;
-        $data['price'] = $request->price;
-        $data['weight'] = 0;
-        $data['options']['image']= $product->image;
-        $data['options']['color_id']= $pro_color->id;
-        Cart::add($data);
-        $pro_color->qty =  $pro_color->qty - $request->qty;
-        $pro_color->save();   
-        return back();
+        if($product->amount_sale > 0&& $product->day_start<=$to_day && $product->day_end>=$to_day){
+            if($request->qty>1){
+                return back()->with('error_qty','Chỉ được mua 1 sản phẩm giảm giá');
+            }
+            }else{
+                $product->amount_sale = $product->amount_sale - $request->qty;
+                $product->save();
+                $data['id'] = $product->id;
+                $data['qty'] = $request->qty;
+                $data['name'] = $product->title;
+                $data['price'] = $request->price;
+                $data['weight'] = 0;
+                $data['options']['image']= $product->image;
+                $data['options']['color_id']= $pro_color->id;
+                Cart::add($data);
+                
+                $pro_color->qty =  $pro_color->qty - $request->qty;
+                $pro_color->save();   
+                Session::push('sale',$product->id);
+                Session::save();
+                return back();
+            }
+            
+        }
+        else{
+            $data['id'] = $product->id;
+                $data['qty'] = $request->qty;
+                $data['name'] = $product->title;
+                $data['price'] = $request->price;
+                $data['weight'] = 0;
+                $data['options']['image']= $product->image;
+                $data['options']['color_id']= $pro_color->id;
+                Cart::add($data);
+                
+                $pro_color->qty =  $pro_color->qty - $request->qty;
+                $pro_color->save();   
+                return back();
+        }
+        
        }
     }
     public function delete_cart($id)
     {
         $rowId = $id;  
+        $product = Product::find(Cart::get($rowId)->id);
+        if(Session::has('sale')){  
+            $ar = [];  
+            foreach(Session::get('sale') as $item){
+                
+                if($item == $product->id){
+                    $product->amount_sale = $product->amount_sale + 1;
+                    $product->save();
+                   
+                }else{
+                    $ar[] = $item;
+                }
+            }
+            if(count($ar)==0){
+                Session::forget('sale');
+            }else{
+                Session::forget('sale');
+                Session::put('sale',$ar);
+            }       
+           
+            
+        }
+        
         $qty = ProductColorPrice::find(Cart::get($rowId)->options->color_id);
         $qty->qty = $qty->qty + Cart::get($rowId)->qty;
         $qty->save();
         Cart::remove($rowId);
+        
         return back();
     }
     public function qty_down($id,$qty)
@@ -197,10 +282,21 @@ class IndexController extends Controller
             $order_detail->product_name = $item->name;
             $order_detail->price = $item->price;
             $order_detail->qty = $item->qty;
+            $color = ProductColorPrice::where('id',$item->options->color_id)->first();
+            $order_detail->color = $color->color;
+            if($color->dungluong_id!=null){
+                $order_detail->dungluong = $color->product_dungluong->dungluong;
+            }
             $order_detail->save();
+            $product = Product::find($item->id);
+            $product->order_count = $product->order_count + $item->qty;
+            $product->save();     
         }
         Cart::destroy();
         Session::forget('coupon');
+       
+        Session::forget('sale');
+        
         return back()->with('success','Đặt hàng thành công chúng tôi sẽ liên hệ bạn');
         
 
@@ -210,7 +306,8 @@ class IndexController extends Controller
         
         $categories = Category::orderBy('id','ASC')->get();
         $category = Category::where('slug_category',$slug)->first();
-        $check = new Collection([]);
+       
+        
         if($request->gia!=null && $request->cate==null){
             $products = new Collection([]);       
             $check = new Collection([]);

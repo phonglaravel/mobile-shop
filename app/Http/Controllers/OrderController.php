@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -86,6 +87,12 @@ class OrderController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $order = Order::find($id);
+        $order_details = OrderDetail::where('order_id',$order->id)->get();
+        foreach($order_details as $item){
+            $item->delete();
+        }
+        $order->delete();
+        return back()->with('success','Xóa thành công');
     }
 }

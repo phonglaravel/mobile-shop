@@ -98,8 +98,7 @@
                         </div>
                         <div class="text-center py-4">
                             @if ($item->product_dungluong->count()==0)
-                            <a class="h6 text-decoration-none " href="{{route('page.product1',[$category->slug_category,$item->slug_product])}}">{{$item->title}}</a>
-                           
+                            <a class="h6 text-decoration-none " href="{{route('page.product1',[$category->slug_category,$item->slug_product])}}">{{$item->title}}</a> 
                             @else 
                             @foreach ($item->product_dungluong as $key=> $i)
                             @if ($key==0)
@@ -112,11 +111,15 @@
                               
                             
                             <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>{{number_format($item->price,0,',','.')}}</h5><h6 class="text-muted ml-2"><del>{{number_format($item->price,0,',','.')}}</del></h6>
+                                @if ($item->sale==0||$item->sale==null||$item->day_start>$to_day||$item->day_end<$to_day||$item->amount_sale==0)
+                            <h5>{{number_format($item->price,0,',','.')}} đ</h5>
+                            @else 
+                            <h5>{{number_format($item->price*(100-$item->sale)/100,0,',','.')}} đ</h5><h6 class="text-muted ml-2"><del>{{number_format($item->price,0,',','.')}} đ</del></h6>
+                            @endif
                             </div>
                             <div class="d-flex align-items-center justify-content-center mb-1">
                                 
-                                <small>Đã mua: {{$item->order_product()}}</small>
+                                <small>Đã mua: {{$item->order_count}}</small>
                             </div>
                         </div>
                     </div>

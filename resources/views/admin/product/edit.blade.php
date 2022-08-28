@@ -18,7 +18,26 @@
             @enderror
           </div>
         </div>
-        
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">Sale</label>
+          <div class="col-sm-10">
+            <input value="{{$product->sale}}" name="sale" type="text" class="form-control" placeholder="Tên">
+            
+          </div>
+          <label class="col-sm-2 col-form-label">Số lượng</label>
+          <div class="col-sm-10">
+            <input  value="{{$product->amount_sale}}" name="amount_sale" type="text" class="form-control" placeholder="Tên">
+            
+          </div>
+          <label class="col-sm-2 col-form-label">Bắt đầu</label>
+          <div class="col-sm-10">
+            <input id="datepicker1" value="{{$product->day_start}}" name="day_start" type="text" class="form-control" placeholder="Tên">
+          </div>
+          <label class="col-sm-2 col-form-label">Kết thúc</label>
+          <div class="col-sm-10">
+            <input id="datepicker2" value="{{$product->day_end}}" name="day_end" type="text" class="form-control" placeholder="Tên">
+          </div>
+        </div>
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">Danh mục</label>
           <div class="col-sm-10">
@@ -45,7 +64,7 @@
             @endforeach                
           </div>
         </div>
-        @if ($product->category_id==6)
+        @if ($product->slug_category=='laptop')
        
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">Ram</label>

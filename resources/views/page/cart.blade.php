@@ -46,7 +46,14 @@
                                     </div>
                                     <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="{{$item->qty}}">
                                     <div class="input-group-btn">
-                                        <a class="btn btn-sm btn-primary btn-plus" href="{{route('qty_up',[$item->rowId,$item->qty])}}">
+                                        <a @if (Session::has('sale'))
+                                        @foreach (Session::get('sale') as $i)
+                                            @if ($i==$item->id)
+                                            style="pointer-events: none;"
+                                            @endif
+                                        @endforeach
+                                        
+                                        @endif class="btn btn-sm btn-primary btn-plus" href="{{route('qty_up',[$item->rowId,$item->qty])}}">
                                             <i class="fa fa-plus"></i>
                                         </a>
                                     </div>

@@ -12,6 +12,10 @@
 <link rel="stylesheet" href="/admin/css/font.css" type="text/css"/>
 <link href="/admin/css/font-awesome.css" rel="stylesheet"> 
 <link rel="stylesheet" href="/admin/css/morris.css" type="text/css"/>
+
+  
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
 <!-- calendar -->
 <link rel="stylesheet" href="/admin/css/monthly.css">
 <!-- //calendar -->
@@ -20,3 +24,4 @@
 <script src="/admin/js/jquery2.0.3.min.js"></scrip>
 <script src="/admin/js/raphael-min.js"></script>
 <script src="/admin/js/morris.js"></script>
+
