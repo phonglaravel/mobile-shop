@@ -6,64 +6,26 @@
         <div class="col-12">
             <nav class="breadcrumb bg-light mb-30">
                 <a class="breadcrumb-item text-dark" href="/">Trang chủ</a>
-                <a class="breadcrumb-item text-dark" href="{{route('page.category',$category->slug_category)}}">{{$category->title}}</a>
-                <span class="breadcrumb-item active">{{$cate->title}}</span>
+                
+                <span class="breadcrumb-item active">{{$keyword}}</span>
             </nav>
         </div>
     </div>
 </div>
-<!-- Breadcrumb End -->
-<div class="container-fluid">
-    <div class="row px-xl-5">
-        <div class="col-12">
-            <nav class="breadcrumb bg-light mb-30">
-                @foreach ($category->cate as $item)
-                <a style="margin-right: 30px" class=" text-dark" href="{{url('/danh-muc/'.$category->slug_category.'/'.$item->slug_cate)}}">{{$item->title}}</a>
-                @endforeach
-                
-                
-                
-            </nav>
-        </div>
-    </div>
-</div>
+
 
 <!-- Shop Start -->
 <div class="container-fluid">
-    <div class="row px-xl-5">
-        <!-- Shop Sidebar Start -->
-        <div class="col-lg-3 col-md-4">
-            <!-- Price Start -->
-            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Lọc sản phẩm</span></h5>
-            <div class="bg-light p-4 mb-30">
-                @if (Request::is('danh-muc/dien-thoai/*'))
-                    @include('page.filter.dienthoai')
-                @elseif (Request::is('danh-muc/laptop/*'))
-                    @include('page.filter.maytinh')
-                @elseif (Request::is('danh-muc/may-tinh-bang/*'))
-                    @include('page.filter.maytinhbang')
-                @elseif (Request::is('danh-muc/am-thanh/*'))
-                    @include('page.filter.amthanh')
-                @elseif (Request::is('danh-muc/phu kien/*'))
-                    @include('page.filter.phukien')
-                @elseif (Request::is('danh-muc/smart-watch/*'))
-                    @include('page.filter.smartwatch')
-                @endif
-            </div>
-            <!-- Price End -->
-            
-            <!-- Color Start -->
-         
-        </div>
-        <!-- Shop Sidebar End -->
+    <div class="px-xl-5">
+      
 
 
         <!-- Shop Product Start -->
-        <div class="col-lg-9 col-md-8">
+        <div class="">
             <div class="row pb-3">
                 
                 @foreach ($products as $item)
-                <div  class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                <div  class="col-lg-3 col-md-6 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
                             <img class="img-fluid w-100" src="{{asset('/image/products/'.$item->image)}}" alt="">
@@ -76,15 +38,18 @@
                         </div>
                         <div class="text-center py-4">
                             @if ($item->product_dungluong->count()==0)
-                            <a class="h6 text-decoration-none " href="{{route('page.product1',[$category->slug_category,$item->slug_product])}}">{{$item->title}}</a>
-                           
+                            <a class="h6 text-decoration-none " href="{{route('page.product1',[$item->category->slug_category,$item->slug_product])}}">{{$item->title}}</a> 
                             @else 
                             @foreach ($item->product_dungluong as $key=> $i)
                             @if ($key==0)
-                            <a class="h6 text-decoration-none " href="{{route('page.product',[$category->slug_category,$item->slug_product,$i->slug_dungluong])}}">{{$item->title}}</a>
+                            <a class="h6 text-decoration-none " href="{{route('page.product',[$item->category->slug_category,$item->slug_product,$i->slug_dungluong])}}">{{$item->title}}</a>
                             @endif
                             @endforeach
                             @endif
+                          
+                               
+                              
+                            
                             <div class="d-flex align-items-center justify-content-center mt-2">
                                 @if ($item->sale==0||$item->sale==null||$item->day_start>$to_day||$item->day_end<$to_day||$item->amount_sale==0)
                             <h5>{{number_format($item->price,0,',','.')}} đ</h5>

@@ -46,13 +46,17 @@
                     <h3>{{$product->title}}</h3>
                     <div class="d-flex mb-3">
                         <div class="text-primary mr-2">
-                            <small class="fas fa-star"></small>
-                            <small class="fas fa-star"></small>
-                            <small class="fas fa-star"></small>
-                            <small class="fas fa-star-half-alt"></small>
-                            <small class="far fa-star"></small>
+                            <input
+                                                class="rating"
+                                                max="5"
+                                                oninput="this.style.setProperty('--value', `${this.valueAsNumber}`)"
+                                                step="0.5"
+                                                style="--value:{{$star}}"
+                                                type="range"
+                                                disabled
+                                                >
                         </div>
-                        <small class="pt-1">(99 Reviews)</small>
+                        <small class="pt-1">({{count($comments)}} bình luận) </small>
                     </div>
                     
                     <form action="{{route('save_cart',$product->id)}}" method="POST">
@@ -152,6 +156,8 @@
                             </a>
                         </div>
                     </div>
+                  
+                   
                 </div>
             </div>
         </div>
@@ -161,7 +167,7 @@
                     <div class="nav nav-tabs mb-4">
                         <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">Bài viết đánh giá</a>
                         <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">Cấu hình chi tiết</a>
-                        <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">Reviews (0)</a>
+                        <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">Bình luận ({{count($comments)}})</a>
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="tab-pane-1">
@@ -173,50 +179,66 @@
                         <div class="tab-pane fade" id="tab-pane-3">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h4 class="mb-4">1 review for "Product Name"</h4>
+                                    <h4 class="mb-4">{{count($comments)}} bình luận cho {{$product->title}}</h4>
+                                    @foreach ($comments as $item)
                                     <div class="media mb-4">
-                                        <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                        
                                         <div class="media-body">
-                                            <h6>John Doe<small> - <i>01 Jan 2045</i></small></h6>
+                                            <h6>{{$item->name}}<small> - <i>{{$item->date}}</i></small></h6>
                                             <div class="text-primary mb-2">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star-half-alt"></i>
-                                                <i class="far fa-star"></i>
+                                                <input
+                                                class="rating"
+                                                max="5"
+                                                oninput="this.style.setProperty('--value', `${this.valueAsNumber}`)"
+                                                step="0.5"
+                                                style="--value:{{$item->star}}"
+                                                type="range"
+                                                disabled
+                                                >
                                             </div>
-                                            <p>Diam amet duo labore stet elitr ea clita ipsum, tempor labore accusam ipsum et no at. Kasd diam tempor rebum magna dolores sed sed eirmod ipsum.</p>
+                                            <p>{{$item->content}}</p>
                                         </div>
                                     </div>
+                                    @endforeach
+                                    
                                 </div>
                                 <div class="col-md-6">
-                                    <h4 class="mb-4">Leave a review</h4>
-                                    <small>Your email address will not be published. Required fields are marked *</small>
+                                    <h4 class="mb-4">Viết  bình luận</h4>
+                                    <form action="{{route('comment',$product->id)}}" method="POST">
+                                        @csrf
                                     <div class="d-flex my-3">
-                                        <p class="mb-0 mr-2">Your Rating * :</p>
+                                        <p class="mb-0 mr-2">Số sao * :</p>
                                         <div class="text-primary">
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
+                                            <input name="star"
+                                                class="rating"
+                                                max="5"
+                                                oninput="this.style.setProperty('--value', `${this.valueAsNumber}`)"
+                                                step="0.5"
+                                                style="--value:0"
+                                                type="range"
+                                                >
                                         </div>
                                     </div>
-                                    <form>
+                                    
                                         <div class="form-group">
-                                            <label for="message">Your Review *</label>
-                                            <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
+                                            <label for="message">Bình luận *</label>
+                                            <textarea name="content" id="message" cols="30" rows="5" class="form-control" required oninvalid="this.setCustomValidity('Xin điền nội dung')"
+                                            oninput="this.setCustomValidity('')"></textarea>
                                         </div>
                                         <div class="form-group">
-                                            <label for="name">Your Name *</label>
-                                            <input type="text" class="form-control" id="name">
+                                            <label for="name">Tên *</label>
+                                            <input name="name" type="text" class="form-control" id="name" required oninvalid="this.setCustomValidity('Tên không được để trống')"
+                                            oninput="this.setCustomValidity('')">
                                         </div>
                                         <div class="form-group">
-                                            <label for="email">Your Email *</label>
-                                            <input type="email" class="form-control" id="email">
+                                            <label for="email">Email *</label>
+                                            <input name="email" type="email" class="form-control" id="email" required oninvalid="this.setCustomValidity('Email không được để trống')"
+                                            oninput="this.setCustomValidity('')">
+                                            
                                         </div>
+
                                         <div class="form-group mb-0">
-                                            <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
+                                            <input type="submit" value="Bình luận" class="btn btn-primary px-3">
                                         </div>
                                     </form>
                                 </div>

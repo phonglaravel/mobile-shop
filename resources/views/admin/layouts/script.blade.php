@@ -108,10 +108,10 @@
 	 <script>
 		$( function() {
 		$( "#datepicker1" ).datepicker({
-			dateFormat: 'M d, yy'
+			dateFormat: 'M dd, yy'
 		});		
 		$( "#datepicker2" ).datepicker({
-			dateFormat: 'M d, yy'
+			dateFormat: 'M dd, yy'
 		});		 
 		
 		

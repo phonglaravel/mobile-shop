@@ -6,6 +6,9 @@ use App\Http\Requests\CheckoutRequest;
 use App\Models\Cate;
 use App\Models\Category;
 use App\Models\Coupon;
+
+use App\Mail\OrderMail;
+use App\Models\CommentProduct;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
@@ -13,43 +16,41 @@ use App\Models\ProductCate;
 use App\Models\ProductColorPrice;
 use App\Models\ProductDungluong;
 use Gloudemans\Shoppingcart\Facades\Cart;
-use Illuminate\Contracts\Session\Session as SessionSession;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+
 
 
 class IndexController extends Controller
 {
     public function index()
     {
-        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
-       
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y'); 
         $sale = Product::where('day_start','<=',$to_day)->where('day_end','>=',$to_day)->where('amount_sale','>',0)->get();
        
         $categories = Category::orderBy('id','ASC')->get();
-        $banner = Product::orderBy('id','DESC')->whereNotNull('banner')->take(3)->get();
-       
+        $banner = Product::orderBy('id','DESC')->whereNotNull('banner')->take(3)->get();   
+
         $category_skip_0 = Category::skip(0)->first();
-        $product_skip_0 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_0->id)->take(8)->get();
+        $product_skip_0 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_0->id)->take(8)->get();   
         
         $category_skip_1 = Category::skip(1)->first();
         $product_skip_1 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_1->id)->take(8)->get();
         
         $category_skip_2 = Category::skip(2)->first();
-        $product_skip_2 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_2->id)->take(8)->get();
+        $product_skip_2 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_2->id)->take(8)->get(); 
         
         $category_skip_3 = Category::skip(3)->first();
         $product_skip_3 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_3->id)->take(8)->get();
-        
+    
         $category_skip_4 = Category::skip(4)->first();
         $product_skip_4 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_4->id)->take(8)->get();
         
         $category_skip_5 = Category::skip(5)->first();
         $product_skip_5 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_5->id)->take(8)->get();
-        
         
         return view('page.index',
         compact('categories','banner','category_skip_0',
@@ -91,7 +92,9 @@ class IndexController extends Controller
        $product_dungluong = ProductDungluong::where('product_id',$product->id)->where('slug_dungluong',$slug_dungluong)->first();
        $product_color_price = ProductColorPrice::where('dungluong_id',$product_dungluong->id)->get();
        $lienquan = Product::orderBy('id','DESC')->where('category_id',$category->id)->take(5)->get();
-       return view('page.product', compact('to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
+       $comments = CommentProduct::orderBy('id','DESC')->where('product_id',$product->id)->get();
+       $star = $comments->avg('star');
+       return view('page.product', compact('star','comments','to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
     }
     public function product1($slug_category,$slug_product)
     {
@@ -99,10 +102,11 @@ class IndexController extends Controller
         $categories = Category::orderBy('id','ASC')->get();
         $category = Category::where('slug_category',$slug_category)->first();
        $product = Product::where('slug_product',$slug_product)->first();
-       
+       $comments = CommentProduct::orderBy('id','DESC')->where('product_id',$product->id)->get();
        $product_color_price = ProductColorPrice::where('product_id',$product->id)->get();
        $lienquan = Product::orderBy('id','DESC')->where('category_id',$category->id)->take(5)->get();
-       return view('page.product', compact('lienquan','categories','product','category','product_color_price','to_day'));
+       $star = $comments->avg('star');
+       return view('page.product', compact('star','comments','lienquan','categories','product','category','product_color_price','to_day'));
     }
     public function cart()
     {
@@ -265,7 +269,8 @@ class IndexController extends Controller
         $order->tinh = $request->tinh;
         $order->huyen = $request->huyen;
         $order->status = 'Đang chờ xử lý';
-        $order->ngaytao = Carbon::now('Asia/Ho_Chi_Minh')->format('h:i:s d/m/Y');
+        $order->ngaytao = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y');
+        $order->thang = Carbon::now('Asia/Ho_Chi_Minh')->format('m/Y');
         if(Session::has('coupon')){
             $order->total = Cart::subTotal(0,',','') - Session::get('coupon')->price;
         }else{
@@ -273,7 +278,9 @@ class IndexController extends Controller
         }
         $order->payment = $request->payment;
         $order->save();
+        $data = [];
         foreach(Cart::content() as $item){
+            $data[] = $item->qty.' '.$item->name.' giá '.$item->price.'. Tổng tiền'.$item->price*$item->qty;
             $order_detail = new OrderDetail();
             $order_detail->order_id = $order->id;
             $order_detail->product_id = $item->id;
@@ -290,6 +297,8 @@ class IndexController extends Controller
             $product->order_count = $product->order_count + $item->qty;
             $product->save();     
         }
+        $email = $request->email;
+        Mail::to($email)->send(new OrderMail($email,$data));
         Cart::destroy();
         Session::forget('coupon');
        
@@ -408,5 +417,91 @@ class IndexController extends Controller
         }
         
         return view('page.filter', compact('category','categories','products','check'));
+    }
+    public function search(Request $request)
+    {
+        $to_day = Carbon::now('Asia/Ho_Chi_minh')->format('M d, Y');
+        $categories = Category::orderBy('id','ASC')->get();
+        $products = Product::where('title','LIKE','%'.$request->keyword.'%')->get();
+        $keyword = $request->keyword;
+        return view('page.search', compact('categories','products','to_day','keyword'));
+    }
+    public function search_ajax(Request $request)
+    {
+        if($request->keyword){
+            $products = Product::where('title','LIKE','%'.$request->keyword.'%')->take(10)->get();
+            $output ='';
+            foreach($products as $item){
+                if($item->product_dungluong->count()==0){
+                    $output.= '<a href="'.route('page.product1',[$item->category->slug_category,$item->slug_product]).'" class="form-control" style="height:40px;width:100%;text-decoration: none">
+                    <img style="height: 100%" src="'.asset('image/products/'.$item->image).'" alt="">
+                
+                '.$item->title.'
+                
+                </a>';
+                }else{
+                    $output.= '<a href="'.route('page.product',[$item->category->slug_category,$item->slug_product,$item->product_dungluong->first()->slug_dungluong]).'" class="form-control" style="height:40px;width:100%;text-decoration: none">
+                    <img style="height: 100%" src="'.asset('image/products/'.$item->image).'" alt="">
+                    
+                    '.$item->title.'
+                    
+                    </a>';
+                }
+               
+            }
+        }
+        echo $output;
+        
+        
+    }
+    public function search_ajax1(Request $request)
+    {
+        if($request->keyword){
+            $products = Product::where('title','LIKE','%'.$request->keyword.'%')->take(10)->get();
+            $output ='';
+            foreach($products as $item){
+                
+                    $output.= '<a onclick="add('.$item->id.')" class="form-control" style="height:40px;width:100%;text-decoration: none">
+                    <img style="height: 100%" src="'.asset('image/products/'.$item->image).'" alt="">
+                    
+                '.$item->title.'
+                
+                </a>
+                <input type="hidden" id="image'.$item->id.'" value="'.$item->image.'">
+                <input type="hidden" id="category'.$item->id.'" value="'.$item->category->title.'">
+                <input type="hidden" id="title'.$item->id.'" value="'.$item->title.'">
+                ';
+                
+                
+               
+            }
+        }
+        echo $output;
+        
+        
+    }
+    public function comment(Request $request,$id)
+    {
+        $comment = new CommentProduct();
+        $comment->name = $request->name;
+        $comment->email = $request->email;
+        $comment->content = $request->content;
+        $comment->star = $request->star;
+        $comment->date = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y');
+        $comment->product_id = $request->id;
+        $comment->save();
+        return back();
+    }
+    public function compare2($id0, $id1){
+       
+        $categories = Category::orderBy('id','ASC')->get();
+        $products = Product::whereIn('id',[$id0,$id1])->get();
+        return view('page.compare', compact('products','categories'));
+    }
+    public function compare3($id0, $id1, $id2){
+       
+        $categories = Category::orderBy('id','ASC')->get();
+        $products = Product::whereIn('id',[$id0,$id1,$id2])->get();
+        return view('page.compare', compact('products','categories'));
     }
 }

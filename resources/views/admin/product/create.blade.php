@@ -131,7 +131,7 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">Kỷ thuật</label>
           <div class="col-sm-10">
-            <textarea id="editor2" name="kithuat" type="text" class="form-control" placeholder="Tên"></textarea>
+            <input name="kithuat" type="text" class="form-control" placeholder="Tên">
             @error('kithuat')
               <span style="color: red">{{ $message }}</span>
             @enderror

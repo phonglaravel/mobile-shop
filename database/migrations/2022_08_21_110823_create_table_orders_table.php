@@ -25,6 +25,7 @@ class CreateTableOrdersTable extends Migration
             $table->string('huyen');
             $table->string('status');
             $table->string('ngaytao');
+            $table->string('thang');
             $table->integer('total');
             $table->string('payment');
         });

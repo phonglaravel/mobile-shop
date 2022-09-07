@@ -47,7 +47,12 @@ Route::post('check-coupon',[IndexController::class,'check_coupon'])->name('check
 Route::get('delete-coupon',[IndexController::class,'delete_coupon'])->name('delete_coupon');
 Route::get('thanh-toan',[IndexController::class,'checkout'])->name('page.checkout');
 Route::post('checkout',[IndexController::class,'send_checkout'])->name('send_checkout');
-
+Route::post('tim-kiem',[IndexController::class,'search'])->name('page.search');
+Route::get('search',[IndexController::class,'search_ajax']);
+Route::get('search1',[IndexController::class,'search_ajax1']);
+Route::post('send-comment/{id}',[IndexController::class,'comment'])->name('comment');
+Route::get('so-sanh-2/{id0}-vs-{id1}',[IndexController::class,'compare2'])->name('page.compare2');
+Route::get('so-sanh-3/{id0}-vs-{id1}-vs-{id2}',[IndexController::class,'compare3'])->name('page.compare3');
 
 
 

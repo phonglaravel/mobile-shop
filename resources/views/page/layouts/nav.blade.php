@@ -8,21 +8,33 @@
                 <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Shop</span>
             </a>
         </div>
-        <div class="col-lg-4 col-6 text-left">
-            <form action="">
+        <div class="col-lg-4 col-6 text-left ">
+            <form action="{{route('page.search')}}" method="POST">
+                @csrf
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for products">
-                    <div class="input-group-append">
-                        <span class="input-group-text bg-transparent text-primary">
-                            <i class="fa fa-search"></i>
-                        </span>
-                    </div>
+                    
+                        <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
+                        <div  class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <button type="submit" style="border: none;background-color: none; padding: 0"><i class="fa fa-search"></i></button>
+                            </span>
+                        </div>            
                 </div>
+                <style>
+                    #search a:hover{
+                        background-color: blueviolet;
+                        color: aliceblue
+                    }
+                </style>
+                <div id="search" class="input-group position-absolute" style="z-index: 2">
+                    
+                </div>
+                
             </form>
         </div>
         <div class="col-lg-4 col-6 text-right">
-            <p class="m-0">Customer Service</p>
-            <h5 class="m-0">+012 345 6789</h5>
+            <p class="m-0">Hot Line</p>
+            <h5 class="m-0">0977 350 884</h5>
         </div>
     </div>
 </div>
@@ -90,3 +102,24 @@
     </div>
 </div>
 <!-- Navbar End -->
+@push('scripts')
+    <script>
+        $('#keyword').keyup(function(){
+            let keyword = $(this).val();
+            if(keyword !=''){
+                $.ajax({
+          			url : "{{url('/search')}}",
+          			method: "GET",
+          			data : {keyword:keyword},
+          			success:function(data)
+          			{
+              			$('#search').fadeIn();                       
+              			$('#search').html(data);
+          			}
+          		})
+            }else{
+                $('#search').fadeOut();  
+            }
+        })
+    </script>
+@endpush
