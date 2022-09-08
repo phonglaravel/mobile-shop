@@ -9,6 +9,7 @@ use App\Models\Coupon;
 
 use App\Mail\OrderMail;
 use App\Models\CommentProduct;
+use App\Models\InfoMobile;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
@@ -94,7 +95,11 @@ class IndexController extends Controller
        $lienquan = Product::orderBy('id','DESC')->where('category_id',$category->id)->take(5)->get();
        $comments = CommentProduct::orderBy('id','DESC')->where('product_id',$product->id)->get();
        $star = $comments->avg('star');
-       return view('page.product', compact('star','comments','to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
+
+       if($category->id ==1){
+        $info = InfoMobile::where('product_id',$product->id)->first();
+       }
+       return view('page.product', compact('info','star','comments','to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
     }
     public function product1($slug_category,$slug_product)
     {
@@ -106,7 +111,8 @@ class IndexController extends Controller
        $product_color_price = ProductColorPrice::where('product_id',$product->id)->get();
        $lienquan = Product::orderBy('id','DESC')->where('category_id',$category->id)->take(5)->get();
        $star = $comments->avg('star');
-       return view('page.product', compact('star','comments','lienquan','categories','product','category','product_color_price','to_day'));
+       $info = InfoMobile::where('product_id',$product->id)->first();
+       return view('page.product', compact('info','star','comments','lienquan','categories','product','category','product_color_price','to_day'));
     }
     public function cart()
     {
@@ -496,12 +502,19 @@ class IndexController extends Controller
        
         $categories = Category::orderBy('id','ASC')->get();
         $products = Product::whereIn('id',[$id0,$id1])->get();
-        return view('page.compare', compact('products','categories'));
+        if($products->first()->category_id==1){
+            $info = InfoMobile::whereIn('product_id',[$id0,$id1])->get();
+        }
+        
+        return view('page.compare', compact('products','categories','info'));
     }
     public function compare3($id0, $id1, $id2){
        
         $categories = Category::orderBy('id','ASC')->get();
         $products = Product::whereIn('id',[$id0,$id1,$id2])->get();
-        return view('page.compare', compact('products','categories'));
+        if($products->first()->category_id==1){
+            $info = InfoMobile::whereIn('product_id',[$id0,$id1,$id2])->get();
+        }
+        return view('page.compare', compact('products','categories','info'));
     }
 }

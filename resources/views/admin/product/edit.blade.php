@@ -186,7 +186,7 @@
           <img src="{{asset('image/products/banner/'.$product->banner)}}" alt="">
           </div>
         </div>
-        
+        @include('admin.layouts.editinfo')
         <button name="saveproduct" style="margin: 20px auto" type="submit" class="btn btn-primary">Lưu</button>
         <a href="{{route('product.index')}}" class="btn btn-success">Quay lại</a>
     </form>

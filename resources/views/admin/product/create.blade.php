@@ -161,6 +161,7 @@
           <input type="file" name="banner" id="" class="form-control" accept="image/*" >
           </div>
         </div>
+       @include('admin.layouts.infoproduct')
         <button style="margin: 20px auto" type="submit" class="btn btn-primary">Lưu</button>
         <a href="{{route('product.index')}}" class="btn btn-success">Quay lại</a>
     </form>

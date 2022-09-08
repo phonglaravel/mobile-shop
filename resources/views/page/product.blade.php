@@ -174,7 +174,7 @@
                             {!!$product->description!!}
                         </div>
                         <div class="tab-pane fade" id="tab-pane-2">
-                            {!!$product->kithuat!!}
+                            @include('page.layouts.infoproduct')
                         </div>
                         <div class="tab-pane fade" id="tab-pane-3">
                             <div class="row">
