@@ -3,13 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckoutRequest;
+use App\Http\Requests\CommentBlogRequest;
 use App\Models\Cate;
 use App\Models\Category;
 use App\Models\Coupon;
 
 use App\Mail\OrderMail;
+use App\Models\Blog;
+use App\Models\CategoryBlog;
+use App\Models\CommentBlog;
 use App\Models\CommentProduct;
+use App\Models\InfoLaptop;
 use App\Models\InfoMobile;
+use App\Models\InfoTablet;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
@@ -53,11 +59,12 @@ class IndexController extends Controller
         $category_skip_5 = Category::skip(5)->first();
         $product_skip_5 = Product::orderBy('order_count','DESC')->where('category_id',$category_skip_5->id)->take(8)->get();
         
+        $blog2 = Blog::orderBy('id','DESC')->take(2)->get();
         return view('page.index',
         compact('categories','banner','category_skip_0',
         'product_skip_0','category_skip_1','product_skip_1','category_skip_2','product_skip_2',
         'category_skip_3','product_skip_3'
-        ,'category_skip_4','product_skip_4','category_skip_5','product_skip_5','sale','to_day'));
+        ,'category_skip_4','product_skip_4','category_skip_5','product_skip_5','sale','to_day','blog2'));
     }
     public function category($slug)
     {
@@ -98,8 +105,17 @@ class IndexController extends Controller
 
        if($category->id ==1){
         $info = InfoMobile::where('product_id',$product->id)->first();
+       }elseif($category->id ==3){
+        $info = InfoTablet::where('product_id',$product->id)->first();
+       }elseif($category->id ==4){
+        $info = InfoLaptop::where('product_id',$product->id)->first();
        }
-       return view('page.product', compact('info','star','comments','to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
+       if(isset($info)){
+        return view('page.product', compact('info','star','comments','to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
+       }else{
+        return view('page.product', compact('star','comments','to_day','lienquan','categories','product','category','product_dungluong','product_color_price'));
+       }
+       
     }
     public function product1($slug_category,$slug_product)
     {
@@ -111,8 +127,19 @@ class IndexController extends Controller
        $product_color_price = ProductColorPrice::where('product_id',$product->id)->get();
        $lienquan = Product::orderBy('id','DESC')->where('category_id',$category->id)->take(5)->get();
        $star = $comments->avg('star');
-       $info = InfoMobile::where('product_id',$product->id)->first();
-       return view('page.product', compact('info','star','comments','lienquan','categories','product','category','product_color_price','to_day'));
+       if($category->id ==1){
+        $info = InfoMobile::where('product_id',$product->id)->first();
+       }elseif($category->id ==3){
+        $info = InfoTablet::where('product_id',$product->id)->first();
+       }elseif($category->id ==4){
+        $info = InfoLaptop::where('product_id',$product->id)->first();
+       }
+       if(isset($info)){
+        return view('page.product', compact('info','star','comments','lienquan','categories','product','category','product_color_price','to_day'));
+       }else{
+        return view('page.product', compact('star','comments','lienquan','categories','product','category','product_color_price','to_day'));
+       }
+      
     }
     public function cart()
     {
@@ -504,6 +531,10 @@ class IndexController extends Controller
         $products = Product::whereIn('id',[$id0,$id1])->get();
         if($products->first()->category_id==1){
             $info = InfoMobile::whereIn('product_id',[$id0,$id1])->get();
+        }elseif($products->first()->category_id==3){
+            $info = InfoTablet::whereIn('product_id',[$id0,$id1])->get();
+        }elseif($products->first()->category_id==4){
+            $info = InfoLaptop::whereIn('product_id',[$id0,$id1])->get();
         }
         
         return view('page.compare', compact('products','categories','info'));
@@ -514,7 +545,50 @@ class IndexController extends Controller
         $products = Product::whereIn('id',[$id0,$id1,$id2])->get();
         if($products->first()->category_id==1){
             $info = InfoMobile::whereIn('product_id',[$id0,$id1,$id2])->get();
+        }elseif($products->first()->category_id==3){
+            $info = InfoTablet::whereIn('product_id',[$id0,$id1,$id2])->get();
+        }elseif($products->first()->category_id==4){
+            $info = InfoLaptop::whereIn('product_id',[$id0,$id1,$id2])->get();
         }
         return view('page.compare', compact('products','categories','info'));
+    }
+    public function blogs()
+    {
+        $categoryblog = CategoryBlog::all();
+        $mostview = Blog::orderBy('count','DESC')->take(5)->get();
+        $categories = Category::orderBy('id','ASC')->get();
+        $blogs = Blog::orderBy('id','DESC')->paginate(11);
+        return view('page.blog', compact('blogs','categories','mostview','categoryblog'));
+    }
+    public function categoryblog($slug)
+    {
+        $main_cate_blog = CategoryBlog::where('slug_categoryblog',$slug)->first();
+        $categoryblog = CategoryBlog::all();
+        $mostview = Blog::orderBy('count','DESC')->take(5)->get();
+        $categories = Category::orderBy('id','ASC')->get();
+        $blogs = Blog::orderBy('id','DESC')->where('loai',$main_cate_blog->id)->paginate(11);
+        return view('page.categoryblog', compact('blogs','categories','mostview','categoryblog','main_cate_blog'));
+    }
+    public function singleblog($slug_categoryblog, $slug_blog)
+    {
+        $main_cate_blog = CategoryBlog::where('slug_categoryblog',$slug_categoryblog)->first();
+        $categoryblog = CategoryBlog::all();
+        $mostview = Blog::orderBy('count','DESC')->take(5)->get();
+        $categories = Category::orderBy('id','ASC')->get();
+        $blog = Blog::where('slug_blog',$slug_blog)->first();
+        $blog->count = $blog->count + 1;
+        $blog->save();
+        return view('page.singleblog', compact('blog','categories','mostview','categoryblog','main_cate_blog'));
+    }
+    public function commentblog(CommentBlogRequest $request, $id)
+    {
+        $comment = new CommentBlog();
+        $comment->name = $request->name;
+        $comment->email = $request->email;
+        $comment->comment = $request->comment;
+        $comment->date = Carbon::now('Asia/Ho_Chi_Minh')->format('H:i:s d/m/Y');
+        $comment->blog_id = $id;
+        $comment->save();
+        return back();
     }
 }

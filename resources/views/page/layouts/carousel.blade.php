@@ -41,22 +41,18 @@
             </div>
         </div>
         <div class="col-lg-4">
+            @foreach ($blog2 as $item)
             <div class="product-offer mb-30" style="height: 200px;">
-                <img class="/page/img-fluid" src="/page/img/offer-1.jpg" alt="">
-                <div class="offer-text">
-                    <h6 class="text-white text-uppercase">Save 20%</h6>
-                    <h3 class="text-white mb-3">Special Offer</h3>
-                    <a href="" class="btn btn-primary">Shop Now</a>
+                <img class="/page/img-fluid" src="{{asset('image/blog/'.$item->image)}}" alt="">
+                <div class="offer-text text-center">
+                    <h5 class="text-white text-uppercase">{{$item->title}}</h5>
+                    <h6 class="text-white text-uppercase">{{$item->category_blog->title}}</h4>
+                    <a href="{{route('page.singleblog',[$item->category_blog->slug_categoryblog,$item->slug_blog])}}" class="btn btn-primary">Xem</a>
                 </div>
             </div>
-            <div class="product-offer mb-30" style="height: 200px;">
-                <img class="/page/img-fluid" src="/page/img/offer-2.jpg" alt="">
-                <div class="offer-text">
-                    <h6 class="text-white text-uppercase">Save 20%</h6>
-                    <h3 class="text-white mb-3">Special Offer</h3>
-                    <a href="" class="btn btn-primary">Shop Now</a>
-                </div>
-            </div>
+            @endforeach
+            
+            
         </div>
     </div>
 </div>

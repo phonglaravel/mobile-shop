@@ -174,7 +174,29 @@
                             {!!$product->description!!}
                         </div>
                         <div class="tab-pane fade" id="tab-pane-2">
-                            @include('page.layouts.infoproduct')
+                            @if (isset($info))
+                            @include('page.layouts.infoproduct')\
+                            @else 
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th>Thông tin</th>                                   
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (explode(',',$product->kithuat) as $item)
+                                    <tr>
+                                        @foreach (explode(':',$item) as $i)
+                                        <th>{{$i}}</th>
+                                        @endforeach
+                                                                           
+                                    </tr>   
+                                    @endforeach
+                                                                
+                                </tbody>
+                              </table>
+                            @endif
+                            
                         </div>
                         <div class="tab-pane fade" id="tab-pane-3">
                             <div class="row">

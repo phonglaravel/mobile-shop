@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Cate;
+use App\Models\InfoLaptop;
 use App\Models\InfoMobile;
+use App\Models\InfoTablet;
 use App\Models\Product;
 use App\Models\ProductCate;
 use App\Models\ProductColorPrice;
@@ -121,6 +123,74 @@ class ProductController extends Controller
             $info->kichthuoc = $request->kichthuoc;
             $info->thoidiemramat = $request->thoidiemramat;
             $info->save();
+        }elseif($product->category_id==3){
+            $info = new InfoTablet();
+            $info->product_id = $product->id;
+            $info->congnghemanhinh = $request->congnghemanhinh;
+            $info->dophangiai = $request->dophangiai;
+            $info->manhinhrong = $request->manhinhrong;
+            $info->hedieuhanh = $request->hedieuhanh;
+            $info->chipxuly = $request->chipxuly;
+            $info->tocdocpu = $request->tocdocpu;
+            $info->chipdohoa = $request->chipdohoa;
+            $info->ram = $request->ram;
+            $info->bonhotrong = $request->bonhotrong;
+            $info->bonhoconlai = $request->bonhoconlai;
+            $info->camerasau = $request->camerasau;
+            $info->quayphim = $request->quayphim;
+            $info->tinhnang = $request->tinhnang;
+            $info->cameratruoc = $request->cameratruoc;
+            $info->tinhnangcameratruoc = $request->tinhnangcameratruoc;
+            $info->mangdidong = $request->mangdidong;
+            $info->sim = $request->sim;
+            $info->cuocgoi = $request->cuocgoi;
+            $info->wifi = $request->wifi;
+            $info->gps = $request->gps;
+            $info->bluetooth = $request->bluetooth;
+            $info->congketnoi = $request->congketnoi;
+            $info->jacktainghe = $request->jacktainghe;
+            $info->tinhnangdacbiet = $request->tinhnangdacbiet;
+            $info->dungluongpin = $request->dungluongpin;
+            $info->loaipin = $request->loaipin;
+            $info->congnghepin = $request->congnghepin;
+            $info->hotrotoida = $request->hotrotoida;
+            $info->sackemmay = $request->sackemmay;
+            $info->chatluong = $request->chatluong;
+            $info->kichthuoc = $request->kichthuoc;
+            $info->ngayramat = $request->ngayramat;
+            $info->tinhtrang1 = $request->tinhtrang1;
+            $info->nguongoc = $request->nguongoc;
+            $info->save();
+          
+        }elseif($product->category_id==4){
+            $info = new InfoLaptop();
+            $info->product_id = $product->id;
+            $info->congnghecpu = $request->congnghecpu;
+            $info->tocdocpu = $request->tocdocpu;
+            $info->tocdotoida = $request->tocdotoida;
+            $info->ram = $request->ram;
+            $info->loairam = $request->loairam;
+            $info->tocdobusram = $request->tocdobusram;
+            $info->ramtoida = $request->ramtoida;
+            $info->ocung = $request->ocung;
+            $info->manhinh = $request->manhinh;
+            $info->dophangiai = $request->dophangiai;
+            $info->congnghemanhinh = $request->congnghemanhinh;
+            $info->cardmanhinh = $request->cardmanhinh;
+            $info->congngheamthanh = $request->congngheamthanh;
+            $info->conggiaotiep = $request->conggiaotiep;
+            $info->ketnoikhongday = $request->ketnoikhongday;
+            $info->webcam = $request->webcam;
+            $info->tinhnangkhac = $request->tinhnangkhac;
+            $info->denbanphim = $request->denbanphim;
+            $info->kichthuoc = $request->kichthuoc;
+            $info->chatlieu = $request->chatlieu;
+            $info->thongtinpin = $request->thongtinpin;
+            $info->hedieuhanh = $request->hedieuhanh;
+            $info->thoigianramat = $request->thoigianramat;
+            
+            $info->save();
+          
         }
         $product->cate()->attach($request->cate_id);
         if($request->dungluong[0]!=null){
@@ -217,6 +287,12 @@ class ProductController extends Controller
         $product = Product::find($id);
         if($product->category_id==1){
             $info = InfoMobile::where('product_id',$product->id)->first();
+        }elseif($product->category_id==3){
+            $info = InfoTablet::where('product_id',$product->id)->first();
+        }elseif($product->category_id==4){
+            $info = InfoLaptop::where('product_id',$product->id)->first();
+        }else{
+            $info = '';
         }
         $mang = [];
         foreach($product->cate as $i){
@@ -323,6 +399,74 @@ class ProductController extends Controller
             $info->kichthuoc = $request->kichthuoc;
             $info->thoidiemramat = $request->thoidiemramat;
             $info->save();
+        }elseif($product->category_id==3){
+            $info = InfoTablet::where('product_id',$product->id)->first();
+            $info->product_id = $product->id;
+            $info->congnghemanhinh = $request->congnghemanhinh;
+            $info->dophangiai = $request->dophangiai;
+            $info->manhinhrong = $request->manhinhrong;
+            $info->hedieuhanh = $request->hedieuhanh;
+            $info->chipxuly = $request->chipxuly;
+            $info->tocdocpu = $request->tocdocpu;
+            $info->chipdohoa = $request->chipdohoa;
+            $info->ram = $request->ram;
+            $info->bonhotrong = $request->bonhotrong;
+            $info->bonhoconlai = $request->bonhoconlai;
+            $info->camerasau = $request->camerasau;
+            $info->quayphim = $request->quayphim;
+            $info->tinhnang = $request->tinhnang;
+            $info->cameratruoc = $request->cameratruoc;
+            $info->tinhnangcameratruoc = $request->tinhnangcameratruoc;
+            $info->mangdidong = $request->mangdidong;
+            $info->sim = $request->sim;
+            $info->cuocgoi = $request->cuocgoi;
+            $info->wifi = $request->wifi;
+            $info->gps = $request->gps;
+            $info->bluetooth = $request->bluetooth;
+            $info->congketnoi = $request->congketnoi;
+            $info->jacktainghe = $request->jacktainghe;
+            $info->tinhnangdacbiet = $request->tinhnangdacbiet;
+            $info->dungluongpin = $request->dungluongpin;
+            $info->loaipin = $request->loaipin;
+            $info->congnghepin = $request->congnghepin;
+            $info->hotrotoida = $request->hotrotoida;
+            $info->sackemmay = $request->sackemmay;
+            $info->chatluong = $request->chatluong;
+            $info->kichthuoc = $request->kichthuoc;
+            $info->ngayramat = $request->ngayramat;
+            $info->tinhtrang1 = $request->tinhtrang1;
+            $info->nguongoc = $request->nguongoc;
+            $info->save();
+          
+        }elseif($product->category_id==4){
+            $info = InfoLaptop::where('product_id',$product->id)->first();
+            $info->product_id = $product->id;
+            $info->congnghecpu = $request->congnghecpu;
+            $info->tocdocpu = $request->tocdocpu;
+            $info->tocdotoida = $request->tocdotoida;
+            $info->ram = $request->ram;
+            $info->loairam = $request->loairam;
+            $info->tocdobusram = $request->tocdobusram;
+            $info->ramtoida = $request->ramtoida;
+            $info->ocung = $request->ocung;
+            $info->manhinh = $request->manhinh;
+            $info->dophangiai = $request->dophangiai;
+            $info->congnghemanhinh = $request->congnghemanhinh;
+            $info->cardmanhinh = $request->cardmanhinh;
+            $info->congngheamthanh = $request->congngheamthanh;
+            $info->conggiaotiep = $request->conggiaotiep;
+            $info->ketnoikhongday = $request->ketnoikhongday;
+            $info->webcam = $request->webcam;
+            $info->tinhnangkhac = $request->tinhnangkhac;
+            $info->denbanphim = $request->denbanphim;
+            $info->kichthuoc = $request->kichthuoc;
+            $info->chatlieu = $request->chatlieu;
+            $info->thongtinpin = $request->thongtinpin;
+            $info->hedieuhanh = $request->hedieuhanh;
+            $info->thoigianramat = $request->thoigianramat;
+            
+            $info->save();
+          
         }
         foreach($product->product_cate as $item){
             $item->delete();

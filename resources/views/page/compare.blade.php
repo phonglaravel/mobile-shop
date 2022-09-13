@@ -17,11 +17,8 @@
 <!-- Shop Start -->
 <div class="container-fluid">
     <div class="px-xl-5">
-      
-                 
-          
-        <table class="table table-bordered">
-          
+        @if ($products->first()->category_id==1)             
+        <table class="table table-bordered">         
             <tbody>
                 <tr>               
                     @foreach ($products as $item)
@@ -809,282 +806,1297 @@
                 
             </tbody>
         </table>
-
-
-    </div>
-</div>
-<a id="mini_sosanh" class="btn">So sánh</a>
-<div class="d-none" id="sosanh">
-    
-    <div " style="text-align: right">
-        <a id="thugon" class="btn tab" >Thu gọn</a>
-    </div>
-    
-        @csrf
-        <div  class="row tab">
-        
-            <div id="product1" class="col-3 mt-2">
-                <a class="btn"  onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                <p>Thêm sản phẩm</p>
-            </div>
-            <div id="product2" class="col-3 mt-2">
-                <a class="btn" onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                <p>Thêm sản phẩm</p>
-            </div>
-            <div id="product3" class="col-3 mt-2">
-                <a class="btn" onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                <p>Thêm sản phẩm</p>
-            </div>
-            <div class="col-3 mt-2">
-                <button id="btn_compare" class="btn btn-primary mb-2">So sánh</button><br/>
-                <a id="delete_sosanh" class="btn btn-primary">Xóa tất cả</a>
-            </div>
-        </div>
-    
-    
-</div>
-<!-- Button trigger modal -->
-
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Hãy nhập tên sản phẩm</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <form action="{{route('page.search')}}" method="POST">
-                @csrf
-                <div class="input-group">
-                    
-                        <input id="keyword1" name="keyword" type="text" class="form-control" placeholder="Nhập từ khóa tìm kiếm">
-                        <div  class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <button type="submit" style="border: none;background-color: none; padding: 0"><i class="fa fa-search"></i></button>
-                            </span>
-                        </div>            
-                </div>
-                <style>
-                    #search1 a:hover{
-                        background-color: blueviolet;
-                        color: aliceblue
-                    }
-                </style>
-                <div id="search1" class="input-group ">
-                    
-                </div>
-                
-            </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-@endsection
-@push('scripts')
-    <script>
-        show();
-        function show(){
-            if(localStorage.getItem('sosanh')!=null){
-                var data = JSON.parse(localStorage.getItem('sosanh'));
-                for (let i = 0; i < data.length; i++) {
-                    let title = data[i].title;
-                    let id = data[i].id;
-                    let image = data[i].image;
-                    let category = data[i].category;
-                    $('#product'+(i+1)).empty()
-                    $('#product'+(i+1)).append(` <img src="`+image+`" alt="" style="height: 70px">
-                    <p>`+title+`</p>      
-                    <button onclick="delete_item(`+id+`)">Xóa</button>  
-                    <input type="hidden" id="id`+i+`" value="`+id+`">
-                    `);
-            
-                }
-            }else{
-                localStorage.setItem('sosanh','[]');
-            }
-        }
-        
-        $('#mini_sosanh').click(function(){
-            $('#sosanh').removeClass('d-none');
-        })
-        $('#thugon').click(function(){
-            $('#sosanh').addClass('d-none');
-        })
-        $('#keyword1').keyup(function(){
-            let keyword = $(this).val();
-            if(keyword !=''){
-                $.ajax({
-          			url : "{{url('/search1')}}",
-          			method: "GET",
-          			data : {keyword:keyword},
-          			success:function(data)
-          			{
-              			$('#search1').fadeIn();                       
-              			$('#search1').html(data);
-          			}
-          		})
-            }else{
-                $('#search1').fadeOut();  
-            }
-        })
-        function showmodal(){
-           
-           $('#exampleModal').modal();
-       }
-     
-        function add(product_id){
-            let id = product_id;
-           let title = $('#title'+id).val();
-           let category = $('#category'+id).val();
-           let image = 'http://127.0.0.1:8000/image/products/'+$('#image'+id).val();
-           let item = {
-                'title' : title,
-                'id' : id,
-                'image' : image,
-                'category' : category
-           }
-           if(localStorage.getItem('sosanh')==null){
-                localStorage.setItem('sosanh','[]');
-            }
-            var old_data = JSON.parse(localStorage.getItem('sosanh'));
-            var matches1 = $.grep(old_data, function(obj){
-                return obj.id == id;
-            })
-            var matches2 = $.grep(old_data, function(obj){
-                return obj.category == category;
-            })
-            if (matches1.length) {
-                alert ('Sản phẩm đã thêm vào so sánh')
-            }else if(old_data.length>0 && matches2==0) {
-                alert ('Không cùng danh mục')
-            }
-            else {
-                if(old_data.length<=2) {
-                    old_data.push(item);
-                    $('#exampleModal').modal('hide');
-                    $('#sosanh').removeClass('d-none');
-                    if(old_data.length==1){
-                    $('#product1').empty()
-                    $('#product1').append(`
-                    <img src="`+image+`" alt="" style="height: 70px">
-                    <p>`+title+`</p>
-                    <button onclick="delete_item(`+id+`)">Xóa</button>
-                    <input type="hidden" id="id0" value="`+id+`">
-                    `);
-                    }
-                    if(old_data.length==2){
-                    $('#product2').empty()
-                    $('#product2').append(`
-                    <img src="`+image+`" alt="" style="height: 70px">
-                    <p>`+title+`</p>
-                    <button onclick="delete_item(`+id+`)">Xóa</button>
-                    <input type="hidden" id="id1" value="`+id+`">
-                    `);
-                    }
-                    if(old_data.length==3){
-                    $('#product3').empty()
-                    $('#product3').append(`
-                    <img src="`+image+`" alt="" style="height: 70px">
-                    <p>`+title+`</p>
-                    <button onclick="delete_item(`+id+`)">Xóa</button>
-                    <input type="hidden" id="id2" value="`+id+`">
-                    `);
-                    }
-                    
-                }else{
-                    alert ('Đã đạt giới hạn so sánh');
-                }
-           
-                localStorage.setItem('sosanh', JSON.stringify(old_data));
-            }
-            localStorage.setItem('sosanh', JSON.stringify(old_data));
-            
-        }
-        $('#delete_sosanh').click(function(){
-            localStorage.removeItem('sosanh')
-                    $('#product1').empty()
-                    $('#product1').append(`
-                    <a class="btn"  onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                    <p>Thêm sản phẩm</p>
-                    `);
-                    $('#product2').empty()
-                    $('#product2').append(`
-                    <a class="btn"  onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                    <p>Thêm sản phẩm</p>
-                    `);    
-                    $('#product3').empty()
-                    $('#product3').append(`
-                    <a class="btn"  onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                    <p>Thêm sản phẩm</p>
-                    `);   
-        })
-       
-        function delete_item(id) {
-            var olddata = JSON.parse(localStorage.getItem('sosanh'));
-            var index = olddata.findIndex(item => item.id===id);
-            olddata.splice(index, 1);
-            localStorage.setItem('sosanh', JSON.stringify(olddata));
-            $('#product1').empty()
-            $('#product1').append(`
-                <a class="btn"  onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                <p>Thêm sản phẩm</p>
-                `); 
-                $('#product2').empty()
-            $('#product2').append(`
-                <a class="btn"  onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                <p>Thêm sản phẩm</p>
-                `);   
-                $('#product3').empty()
-            $('#product3').append(`
-                <a class="btn"  onclick="showmodal()"><i class="fas fa-image" style="font-size: 70px"></i></a>
-                <p>Thêm sản phẩm</p>
-                `);     
-            if(localStorage.getItem('sosanh')!=null){
-                var data = JSON.parse(localStorage.getItem('sosanh'));
-                for (let i = 0; i < data.length; i++) {
-                    let title = data[i].title;
-                    let id = data[i].id;
-                    let image = data[i].image;
-                    let category = data[i].category;
-                    
-                    $('#product'+(i+1)).empty()
-                    $('#product'+(i+1)).append(` <img src="`+image+`" alt="" style="height: 70px">
-                    <p>`+title+`</p>      
-                    <button onclick="delete_item(`+id+`)">Xóa</button>  
-                    <input type="hidden" id="id`+i+`" value="`+id+`">
-                    `);
-            
-                }
-            }else{
-                localStorage.setItem('sosanh','[]');
-            }
-                 
-            
+        @elseif ($products->first()->category_id==3)
+        <table class="table table-bordered">         
+            <tbody>
+                <tr>               
+                    @foreach ($products as $item)
+                    <td class="col-4">
+                        <img style="height: 120px" src="{{asset('image/products/'.$item->image)}}" alt="">
+                        <h5 class="ml-2">{{$item->title}}</h5>
+                        <p class="ml-2">{{number_format($item->price,0,'.',',')}} đ</p>
+                    </td>
+                    @endforeach
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif    
+                </tr>           
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">TỔNG QUAN</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @foreach ($products as $item)
+                    <td class="col-4">
+                    @foreach (explode(',',$item->kithuat) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
              
-        }
-        $('#btn_compare').click(function(){
-            let id0 = $('#id0').val();
-            let id1 = $('#id1').val();
-            let id2 = $('#id2').val();
-            if(id1==null && id2==null){
-                alert('Hãy thêm sản phẩm để so sánh')
-            }
-            else if(id1==null && id2==null && id0==null){
-                alert('Hãy thêm sản phẩm để so sánh')
-            }else if(id2==null){
-                window.location.assign("http://127.0.0.1:8000/so-sanh-2/"+id0+"-vs-"+id1)
-            }else{
-                window.location.assign("http://127.0.0.1:8000/so-sanh-3/"+id0+"-vs-"+id1+"-vs-"+id2)
-            }
-        })
-    </script>
-@endpush
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Kiểu màn hình</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Công nghệ màn hình</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->congnghemanhinh) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Độ phân giải</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->dophangiai) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Màn hình rộng</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->manhinhrong) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Hệ điều hành & CPU</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Hệ điều hành</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->hedieuhanh) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Chip xử lý</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->chipxuly) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Tốc độ CPU</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tocdocpu) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Chip đồ họa</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->chipdohoa) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Bộ nhớ & Lưu trữ</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>RAM</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->ram) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Bộ nhớ trong</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->bonhotrong) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Bộ nhớ còn lại</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->bonhoconlai) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Camera sau</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Độ phân giải camera sau</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->camerasau) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Quay phim</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->quayphim) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Tính năng<</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tinhnang) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Camera trước</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Độ phân giải camera trước</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->cameratruoc) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Tính năng camera trước</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tinhnangcameratruoc) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Kết nối</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Mạng di động</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->mangdidong) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Sim</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->sim) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Thực hiện cuộc gọi</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->cuocgoi) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Wifi</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->wifi) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>GPS</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->gps) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Bluetooth</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->bluetooth) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Cổng kết nối</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->congketnoi) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Jack tai nghe</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->jacktainghe) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Tiện ích</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Tính năng đặc biệt</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tinhnangdacbiet) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+              
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Pin & Sạc</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Dung lượng pin</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->dungluongpin) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Loại pin</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->loaipin) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Công nghệ pin</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->congnghepin) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Hỗ trợ sạc tối đa</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->hotrotoida) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Sạc kèm theo máy</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->sackemmay) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Thông tin chung</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Chất liệu</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->chatluong) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Kích thước khối lượng</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->kichthuoc) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                        <p>Thời điểm ra mắt</p>
+                    @else 
+                        <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->ngayramat) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                 
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Tình trạng</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tinhtrang1) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Nguồn gốc</p>
+                     @else 
+                      <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->nguongoc) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+               
+                
+            </tbody>
+        </table>
+        @elseif ($products->first()->category_id==4)
+        <table class="table table-bordered">         
+            <tbody>
+                <tr>               
+                    @foreach ($products as $item)
+                    <td class="col-4">
+                        <img style="height: 120px" src="{{asset('image/products/'.$item->image)}}" alt="">
+                        <h5 class="ml-2">{{$item->title}}</h5>
+                        <p class="ml-2">{{number_format($item->price,0,'.',',')}} đ</p>
+                    </td>
+                    @endforeach
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif    
+                </tr>           
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">TỔNG QUAN</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @foreach ($products as $item)
+                    <td class="col-4">
+                    @foreach (explode(',',$item->kithuat) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+             
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Công nghệ CPU</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->congnghecpu) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Tốc độ CPU</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tocdocpu) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Tốc độ tối đa</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tocdotoida) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>RAM</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->ram) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Loại ram</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->loairam) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Tốc độ Bus RAM</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tocdobusram) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Hỗ trợ RAM tối đa</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->ramtoida) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Ổ cứng</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->ocung) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Kiểu màn hình</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Màn hình</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->manhinh) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Độ phân giải</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->dophangiai) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Công nghệ màn hình</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->congnghemanhinh) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Đồ họa và Âm thanh</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Card màn hình</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->cardmanhinh) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Công nghệ âm thanh</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->congngheamthanh) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Cổng kết nối & tính năng mở rộng</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Cổng giao tiếp</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->conggiaotiep) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Kết nối không dây</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->ketnoikhongday) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Webcam</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->webcam) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Tính năng khác</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->tinhnangkhac) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Đèn bàn phím</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->denbanphim) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Kích thước & trọng lượng</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Kích thước, trọng lượng</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->kichthuoc) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Chất liệu</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->chatlieu) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>                
+                    <th class="col-4">Thông tin khác</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Thông tin Pin</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->thongtinpin) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Hệ điều hành</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->hedieuhanh) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+                <tr>               
+                    @foreach ($info as $key => $item)
+                    <td class="col-4">
+                    @if ($key==0)
+                    <p>Thời điểm ra mắt</p>
+                    @else 
+                    <p>&nbsp</p>              
+                    @endif
+                    @foreach (explode(',',$item->thoigianramat) as $i)
+                    <li>{{$i}}</li>
+                    @endforeach
+                    
+                    </td>
+                    @endforeach  
+                    @if (count($products)==2)
+                    <td class="col-4"></td>
+                    @endif                  
+                </tr>
+            </tbody>
+        </table>
+        @endif 
+
+    </div>
+</div>
+@include('page.layouts.mini_compare')
+@endsection

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CateController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
@@ -29,6 +30,7 @@ Route::prefix('admincp')->middleware('auth','is_admin')->group(function(){
     Route::resource('product',ProductController::class);
     Route::resource('coupon',CouponController::class);
     Route::resource('order',OrderController::class);
+    Route::resource('blog',BlogController::class);
     Route::delete('delete-image/{id}',[ProductController::class,'delete_image'])->name('delete_image');
 });
 Route::get('danhmuccon',[ProductController::class,'danhmuccon']);
@@ -53,6 +55,10 @@ Route::get('search1',[IndexController::class,'search_ajax1']);
 Route::post('send-comment/{id}',[IndexController::class,'comment'])->name('comment');
 Route::get('so-sanh-2/{id0}-vs-{id1}',[IndexController::class,'compare2'])->name('page.compare2');
 Route::get('so-sanh-3/{id0}-vs-{id1}-vs-{id2}',[IndexController::class,'compare3'])->name('page.compare3');
+Route::get('bai-viet',[IndexController::class,'blogs'])->name('page.blogs');
+Route::get('bai-viet/{slug}',[IndexController::class,'categoryblog'])->name('page.categoryblog');
+Route::get('bai-viet/{slug_categoryblog}/{slug_blog}',[IndexController::class,'singleblog'])->name('page.singleblog');
+Route::post('comment-blog/{id}',[IndexController::class,'commentblog'])->name('commentblog');
 
 
 

@@ -1,6 +1,5 @@
 <!-- Topbar Start -->
-<div class="container-fluid">
-   
+<div class="container-fluid">  
     <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
         <div class="col-lg-4">
             <a href="/" class="text-decoration-none">
@@ -84,7 +83,8 @@
                     <div class="navbar-nav mr-auto py-0">
                         @foreach ($categories as $item)
                         <a href="{{route('page.category',$item->slug_category)}}" class="nav-item nav-link active">{{$item->title}}</a>
-                        @endforeach                      
+                        @endforeach    
+                        <a href="{{route('page.blogs')}}" class="nav-item nav-link active">Bài viết</a>                  
                     </div>
                     <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                         <a href="" class="btn px-0">

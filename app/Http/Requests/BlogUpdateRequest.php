@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCategoryRequest extends FormRequest
+class BlogUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,17 +23,19 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function rules()
     {
-        
         return [
-            'title'=>'required|unique:categories,title,'.$this->category->id,
+            'title' => 'required|unique:blogs,title,'.$this->blog->id,          
+            'content' => 'required',
            
         ];
     }
     public function messages()
     {
         return [
-            'title.required'=>'Vui lòng nhập tên',
-            'title.unique'=>'Tên đã trùng',
+            'title.required' => 'Không được để trống',         
+            'title.unique' => 'Tên trùng xin chọn lại',
+            'content.required' => 'Không được để trống'
+          
         ];
     }
 }
